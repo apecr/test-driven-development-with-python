@@ -64,10 +64,7 @@ def test_create_first_to_do_list_element(browser):
     input_box.send_keys(Keys.ENTER)
     time.sleep(1)
 
-    table = browser.find_element_by_id('id_list_table')
-    rows = table.find_elements_by_tag_name('tr')
-
-    assert '1: Buy peacock feathers' in rows[0].text
+    check_for_row_in_list_table(browser, '1: Buy peacock feathers')
 
 
 def test_create_two_to_do_list_elements(browser):
@@ -82,8 +79,16 @@ def test_create_two_to_do_list_elements(browser):
     input_box.send_keys(Keys.ENTER)
     time.sleep(1)
 
+    check_for_row_in_list_table(browser, '1: Buy peacock feathers')
+    check_for_row_in_list_table(browser, '2: Use peacock feathers to make a fly')
+
+    assert 1 == 2
+
+
+def check_for_row_in_list_table(browser, row_text):
     table = browser.find_element_by_id('id_list_table')
     rows = table.find_elements_by_tag_name('tr')
 
-    assert '1: Buy peacock feathers' in rows[0].text
-    assert '2: Use peacock feathers to make a fly' in rows[0].text
+    [print(row.text) for row in rows]
+    print([row_text in row.text is False for row in rows])
+    assert [row_text in row.text is False for row in rows]
