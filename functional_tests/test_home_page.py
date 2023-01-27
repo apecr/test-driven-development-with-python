@@ -66,7 +66,7 @@ def test_create_first_to_do_list_element(browser):
 
     table = browser.find_element_by_id('id_list_table')
     rows = table.find_elements_by_tag_name('tr')
-    assert any(row.text == '1: Buy peacock feathers' for row in rows) is True
+    assert any(row.text == '1: Buy peacock feathers' for row in rows) is True, "New to-do item did not appear in table"
 
 
 
