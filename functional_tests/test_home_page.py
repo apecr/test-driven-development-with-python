@@ -1,10 +1,14 @@
+import time
+
 import pytest
 from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def browser():
     browser = webdriver.Firefox()
+    browser.get("http://localhost:8000")
 
     yield browser
 
@@ -34,9 +38,36 @@ def browser():
 
 
 def test_title_is_ok(browser):
-    browser.get("http://localhost:8000")
-
     # She notices the page title and header mention to-do lists
     assert 'To-Do' in browser.title
 
-    browser.quit()
+
+def test_assert_h1_correct_value(browser):
+    # She notices the page title and header mention to-do lists
+    header_text = browser.find_element_by_tag_name('h1').text
+
+    assert 'To-Do' in header_text
+
+
+def test_enter_a_to_do_list_straight_away(browser):
+    # She is invited to enter a to-do item straight away
+    input_box = browser.find_element_by_id('id_new_item')
+
+    assert input_box.get_attribute('placeholder') == 'Enter a to-do item'
+
+
+def test_create_first_to_do_list_element(browser):
+    input_box = browser.find_element_by_id('id_new_item')
+    # She types "Buy peacock feathers" into a text box (Edith's hobby
+    # is tying fly-fishing lures)
+    input_box.send_keys('Buy peacock feathers')
+    input_box.send_keys(Keys.ENTER)
+    time.sleep(1)
+
+    table = browser.find_element_by_id('id_list_table')
+    rows = table.find_elements_by_tag_name('tr')
+    assert any(row.text == '1: Buy peacock feathers' for row in rows) is True
+
+
+
+
