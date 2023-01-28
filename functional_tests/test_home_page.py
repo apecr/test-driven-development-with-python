@@ -79,16 +79,14 @@ def test_create_two_to_do_list_elements(browser):
     input_box.send_keys(Keys.ENTER)
     time.sleep(1)
 
-    check_for_row_in_list_table(browser, '1: Buy peacock feathers')
-    check_for_row_in_list_table(browser, '2: Use peacock feathers to make a fly')
+    check_for_row_in_list_table(browser, '1: Buy peacock feathers', 1)
+    check_for_row_in_list_table(browser, '2: Use peacock feathers to make a fly', 2)
 
     assert 1 == 2
 
 
-def check_for_row_in_list_table(browser, row_text):
+def check_for_row_in_list_table(browser, row_text, row_position):
     table = browser.find_element_by_id('id_list_table')
     rows = table.find_elements_by_tag_name('tr')
 
-    [print(row.text) for row in rows]
-    print([row_text in row.text is False for row in rows])
-    assert [row_text in row.text is False for row in rows]
+    assert rows[row_position].text == row_text
