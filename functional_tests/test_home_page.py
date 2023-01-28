@@ -2,7 +2,10 @@ import time
 
 from django.test import LiveServerTestCase
 from selenium import webdriver
+from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.common.keys import Keys
+
+MAX_WAIT = 10
 
 
 class NewVisitorTest(LiveServerTestCase):
@@ -37,7 +40,7 @@ class NewVisitorTest(LiveServerTestCase):
         input_box.send_keys(Keys.ENTER)
         time.sleep(1)
 
-        assert self.__get_rows()[0].text == '1: Buy peacock feathers'
+        self.wait_for_row_in_list_table('1: Buy peacock feathers')
 
     def test_create_two_to_do_list_elements(self):
         input_box = self.browser.find_element_by_id('id_new_item')
@@ -45,18 +48,25 @@ class NewVisitorTest(LiveServerTestCase):
         # is tying fly-fishing lures)
         input_box.send_keys('Buy peacock feathers')
         input_box.send_keys(Keys.ENTER)
-        time.sleep(1)
+        self.wait_for_row_in_list_table('1: Buy peacock feathers')
+
         input_box = self.browser.find_element_by_id('id_new_item')
         input_box.send_keys('Use peacock feathers to make a fly')
         input_box.send_keys(Keys.ENTER)
-        time.sleep(1)
+        self.wait_for_row_in_list_table('2: Use peacock feathers to make a fly')
 
-        assert self.__get_rows()[0].text == '1: Buy peacock feathers'
-        assert self.__get_rows()[1].text == '2: Use peacock feathers to make a fly'
-
-    def __get_rows(self):
-        table = self.browser.find_element_by_id('id_list_table')
-        return table.find_elements_by_tag_name('tr')
+    def wait_for_row_in_list_table(self, row_text):
+        start_time = time.time()
+        while True:
+            try:
+                table = self.browser.find_element_by_id('id_list_table')
+                rows = table.find_elements_by_tag_name('tr')
+                self.assertIn(row_text, [row.text for row in rows])
+                return
+            except (AssertionError, WebDriverException) as e:
+                if time.time() - start_time > MAX_WAIT:
+                    raise e
+                time.sleep(0.5)
 
 # She is invited to enter a to-do item straight away
 
