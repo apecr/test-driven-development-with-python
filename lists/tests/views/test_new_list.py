@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from lists.models import Item
+from lists.models import Item, List
 
 
 class NewListTest(TestCase):
@@ -14,4 +14,5 @@ class NewListTest(TestCase):
     def test_redirect_after_POST(self):
         response = self.client.post('/lists/new', data={'item_text': 'A new list item'})
 
-        self.assertRedirects(response, '/lists/the-only-list-in-the-world/')
+        self.assertRedirects(response, f'/lists/{List.objects.first().id}/')
+
