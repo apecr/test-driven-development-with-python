@@ -1,5 +1,7 @@
 from django.test import TestCase
+
 from lists.models import Item
+
 
 class ItemModelTest(TestCase):
     def test_saving_and_retrieving_items(self):
@@ -19,4 +21,6 @@ class ItemModelTest(TestCase):
 
         self.assertEqual(first_saved_item.text, 'The first (ever) list item')
         self.assertEqual(second_saved_item.text, 'Item the second')
+
+
 
